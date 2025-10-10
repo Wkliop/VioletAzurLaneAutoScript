@@ -831,10 +831,11 @@ class OSMap(OSFleet, Map, GlobeCamera, StrategicSearchHandler):
         if 'is_scanning_device' not in self._solved_map_event and grids and grids[0].is_scanning_device:
             grid = grids[0]
             logger.info(f'Found scanning device on {grid}')
-            if self.is_in_task_cl1_leveling:
-                logger.info('In CL1 leveling, mark scanning device as solved')
-                self._solved_map_event.add('is_scanning_device')
-                return True
+            # if self.is_in_task_cl1_leveling:
+            #     logger.info('In CL1 leveling, mark scanning device as solved')
+            #     self._solved_map_event.add('is_scanning_device')
+            #     return True
+            #violet修改-检测是否在侵蚀1刷级任务中如果是,则直接将扫描设备标记为已解决并返回-注释上面4行
 
             self.device.click(grid)
             with self.config.temporary(STORY_ALLOW_SKIP=False):

@@ -381,6 +381,7 @@ class OperationSiren(OSMap):
                         submarine_call=self.config.OpsiFleet_Submarine)
                     self.run_auto_search()
                     self.handle_after_auto_search()
+                    self.config.task_call('OpsiHazard1Leveling')
                     self.config.check_task_switch()
             else:
                 zones = self.zone_select(hazard_level=self.config.OpsiMeowfficerFarming_HazardLevel) \
@@ -396,8 +397,8 @@ class OperationSiren(OSMap):
                     submarine_call=self.config.OpsiFleet_Submarine)
                 self.run_auto_search()
                 self.handle_after_auto_search()
+                self.config.task_call('OpsiHazard1Leveling')
                 self.config.check_task_switch()
-
     def os_hazard1_leveling(self):
         logger.hr('OS hazard 1 leveling', level=1)
         # Without these enabled, CL1 gains 0 profits
@@ -405,8 +406,9 @@ class OperationSiren(OSMap):
             OpsiGeneral_DoRandomMapEvent=True,
             OpsiGeneral_AkashiShopFilter='ActionPoint',
         )
-        if not self.config.is_task_enabled('OpsiMeowfficerFarming'):
-            self.config.cross_set(keys='OpsiMeowfficerFarming.Scheduler.Enable', value=True)
+        # if not self.config.is_task_enabled('OpsiMeowfficerFarming'):
+        #     self.config.cross_set(keys='OpsiMeowfficerFarming.Scheduler.Enable', value=True)
+        #violet修改-检测开启侵蚀1后是否启用短猫没有则自动启用它-注释上面2行
         while True:
             # Limited action point preserve of hazard 1 to 200
             self.config.OS_ACTION_POINT_PRESERVE = 200
@@ -417,7 +419,9 @@ class OperationSiren(OSMap):
                 self.config.OS_ACTION_POINT_PRESERVE = 0
             logger.attr('OS_ACTION_POINT_PRESERVE', self.config.OS_ACTION_POINT_PRESERVE)
 
-            if self.get_yellow_coins() < self.config.OS_CL1_YELLOW_COINS_PRESERVE:
+            # if self.get_yellow_coins() < self.config.OS_CL1_YELLOW_COINS_PRESERVE:
+            if self.get_yellow_coins() < 30000:
+            #violet修改-检测白币到一定值就自动短猫-上面7行,注释掉原if条件,我修改为固定30000
                 logger.info(f'Reach the limit of yellow coins, preserve={self.config.OS_CL1_YELLOW_COINS_PRESERVE}')
                 with self.config.multi_set():
                     self.config.task_delay(server_update=True)
@@ -433,7 +437,8 @@ class OperationSiren(OSMap):
             if self.config.OpsiGeneral_BuyActionPointLimit > 0:
                 keep_current_ap = False
             self.action_point_set(cost=70, keep_current_ap=keep_current_ap, check_rest_ap=True)
-            if self._action_point_total >= 3000:
+            if self._action_point_total >= 10000:
+            #violet修改-设定阈值为3000体力则自动短猫,我修改为10000体力
                 with self.config.multi_set():
                     self.config.task_delay(server_update=True)
                     if not self.is_in_opsi_explore():
