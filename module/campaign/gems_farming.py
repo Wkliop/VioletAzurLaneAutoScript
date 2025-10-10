@@ -190,14 +190,14 @@ class GemsFarming(CampaignRun, FleetEquipment, Dock):
         self.dock_favourite_set(False, wait_loading=False)
         self.dock_sort_method_dsc_set(False, wait_loading=False)
         self.dock_filter_set(
-            index='cv', rarity='common', extra='enhanceable', sort='total')
-
+            index='cv', rarity='common', extra='can_limit_break', sort='total')
+        #violet修改-上面一行是船坞筛选条件-调整extra='enhanceable'修改为extra='can_limit_break'
         logger.hr('FINDING FLAGSHIP')
 
-        scanner = ShipScanner(level=(1, 31), emotion=(10, 150),
+        scanner = ShipScanner(level=(80, 100), emotion=(40, 150),
                               fleet=self.fleet_to_attack, status='free')
         scanner.disable('rarity')
-
+        #violet修改-上面3行是后排选择逻辑-调整满等级,从等级1-31修改为等级80-100,从心情10-150修改为心情40-150
         if self.config.GemsFarming_CommonCV == 'any':
 
             ships = scanner.scan(self.device.image)
@@ -272,10 +272,10 @@ class GemsFarming(CampaignRun, FleetEquipment, Dock):
         else:
             max_level = 70
 
-        scanner = ShipScanner(level=(max_level, max_level), emotion=(10, 150),
+        scanner = ShipScanner(level=(max_level, max_level), emotion=(40, 150),
                               fleet=[0, self.fleet_to_attack], status='free')
         scanner.disable('rarity')
-
+        #violet修改-上面3行是前排选择逻辑-调整满等级,从心情10-150修改为心情40-150
         if self.config.GemsFarming_CommonDD in ['any', 'favourite', 'z20_or_z21']:
             # Change to any ship
             return scanner.scan(self.device.image)
@@ -391,11 +391,11 @@ class GemsFarming(CampaignRun, FleetEquipment, Dock):
 
     def triggered_stop_condition(self, oil_check=True):
         # Lv32 limit
-        if self.change_flagship and self.campaign.config.LV32_TRIGGERED:
-            self._trigger_lv32 = True
-            logger.hr('TRIGGERED LV32 LIMIT')
-            return True
-
+        # if self.change_flagship and self.campaign.config.LV32_TRIGGERED:
+        #     self._trigger_lv32 = True
+        #     logger.hr('TRIGGERED LV32 LIMIT')
+        #     return True
+        #violet修改-32级触发旗舰等级更换的逻辑-注释掉上面4行
         if self.campaign.map_is_auto_search and self.campaign.config.GEMS_EMOTION_TRIGGERED:
             self._trigger_emotion = True
             logger.hr('TRIGGERED EMOTION LIMIT')
@@ -411,8 +411,8 @@ class GemsFarming(CampaignRun, FleetEquipment, Dock):
             mode (str): `normal` or `hard`
             total (int):
         """
-        self.config.STOP_IF_REACH_LV32 = self.change_flagship
-
+        # self.config.STOP_IF_REACH_LV32 = self.change_flagship
+        #violet修改-32级停止条件的设置-注释掉上面1行
         while 1:
             self._trigger_lv32 = False
             is_limit = self.config.StopCondition_RunCount
@@ -426,7 +426,8 @@ class GemsFarming(CampaignRun, FleetEquipment, Dock):
                     raise e
 
             # End
-            if self._trigger_lv32 or self._trigger_emotion:
+            if self._trigger_emotion:
+                #violet修改-情绪触发时才更换旗舰和前排-修改上面1行,从if self._trigger_lv32 or self._trigger_emotion改为self._trigger_emotion
                 success = True
                 if self.change_flagship:
                     success = self.flagship_change()
