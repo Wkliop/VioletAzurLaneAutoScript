@@ -423,6 +423,14 @@ class AlasGUI(Frame):
 
         with use_scope("schedulers"):
             put_scope(
+                "image-container",
+                [
+                    put_text("实时截图图片").style(
+                        "font-size: 1.25rem; margin: auto .5rem auto;"
+                    )
+                ],
+            )
+            put_scope(
                 "scheduler-bar",
                 [
                     put_text(t("Gui.Overview.Scheduler")).style(
